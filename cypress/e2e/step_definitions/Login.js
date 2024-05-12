@@ -1,4 +1,3 @@
-//import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import {
 	Given,
 	When,
@@ -10,10 +9,8 @@ let loginPage = new LoginPage();
 Given('I am on the Amazon login page', () => {
 
 	cy.reload();
-	//cy.log(Cypress.config('baseUrl'));
 	cy.visit('/');
 	cy.wait(1000)
-	//cy.getAllLocalStorage().should('not.be.empty')
 	cy.clearLocalStorage()
 	cy.getAllLocalStorage().should('be.empty')
 	cy.reload();
@@ -39,47 +36,47 @@ Given('I am on the Amazon login page', () => {
 
 });
 
-When('I enter "{string}" in the email field', (username) => {
-
+When('I enter "{string}" in the {string} field', (value, field) => {
 	cy.reload();
 
-	if (username === 'empty') {
+	if (value === 'empty') {
 		// Do nothing
-	} else {
-		loginPage.fillUsername(username);
+		return;
+	}
+
+	switch(field) {
+		case 'email':
+			loginPage.fillUsername(value);
+			break;
+		case 'password':
+			loginPage.fillPassword(value);
+			break;
+		default:
+			throw new Error(`Unsupported field: ${field}`);
 	}
 });
 
-When('I enter valid user in the email field', () => {
+When('I enter valid {string} in the {string} field', (dataType, fieldName) => {
+	const validUserData = {
+		email: loginPage.validUsername(),
+		password: loginPage.validPassword()
+	};
+
 	cy.url().then(url => {
 		if (url.includes("amazon.de")) {
 			//cy.log("it is de");
-			loginPage.fillUsername("+359988887163");
+			if (fieldName === 'email') {
+				loginPage.fillUsername(validUserData.email);
+			} else if (fieldName === 'password') {
+				loginPage.fillPassword(validUserData.password);
+			}
 		} else {
 			//cy.log("it is not de");
-			loginPage.fillUsername("+359988887163");
-		}
-	});
-});
-
-When('I enter "{string}" in the password field', (password) => {
-
-	if (password === 'empty') {
-		// Do nothing
-	} else {
-		loginPage.fillPassword(password);
-	}
-
-});
-
-When('I enter valid password in the password field', () => {
-	cy.url().then(url => {
-		if (url.includes("amazon.de")) {
-			//cy.log("it is de");
-			loginPage.fillPassword("validPassword");
-		} else {
-			//cy.log("it is not de");
-			loginPage.fillPassword("validPassword");
+			if (fieldName === 'email') {
+				loginPage.fillUsername(validUserData.email);
+			} else if (fieldName === 'password') {
+				loginPage.fillPassword(validUserData.password);
+			}
 		}
 	});
 });
@@ -89,48 +86,46 @@ Then('I should see the landing home page', () => {
 	loginPage.userAccount();
 });
 
-Then('I should see an error message for invalid email', () => {
-
-	cy.url().then(url => {
-		if (url.includes("amazon.de")) {
-			cy.log("it is de");
-			loginPage.invalidUsernameMessageDe();
-		} else {
-			cy.log("it is not de");
-			loginPage.invalidUsernameMessage();
-		}
-	});
-
+Then('I should see an error message for {string}', (errorMessageType) => {
+	switch(errorMessageType) {
+		case 'invalid email':
+			cy.url().then(url => {
+				if (url.includes("amazon.de")) {
+					loginPage.invalidUsernameMessageDe();
+				} else {
+					loginPage.invalidUsernameMessage();
+				}
+			});
+			break;
+		case 'missing email or mobile number':
+			cy.url().then(url => {
+				if (url.includes("amazon.de")) {
+					loginPage.emptyEmailOrPhoneMessageDe();
+				} else {
+					loginPage.emptyEmailOrPhoneMessage();
+				}
+			});
+			break;
+		case 'invalid phone number':
+			loginPage.invalidPhoneNumberMessage();
+			break;
+		case 'missing password':
+			loginPage.emptyPasswordMessage();
+			break;
+		default:
+			throw new Error(`Unsupported error type: ${errorMessageType}`);
+	}
 });
 
-Then('I should see an error message for invalid phone number', () => {
-	loginPage.invalidPhoneNumberMessage();
-});
-
-Then('I should see an error message for missing email or mobile number', (type) => {
-
-	cy.url().then(url => {
-		if (url.includes("amazon.de")) {
-			cy.log("it is de");
-			loginPage.emptyEmailOrPhoneMessageDe();
-		} else {
-			cy.log("it is not de");
-			loginPage.emptyEmailOrPhoneMessage();
-		}
-	});
-
-});
-
-Then('I should see an error message for missing password', (type) => {
-
-	loginPage.emptyPasswordMessage();
-
-});
-
-When('I click on the Continue button', () => {
-	loginPage.continueBtnClick();
-});
-
-When('I click on the Sign in button', () => {
-	loginPage.signInBtnClick();
+When('I click on the {string} button', (button) => {
+	switch(button) {
+		case 'Continue':
+			loginPage.continueBtnClick();
+			break;
+		case 'Sign in':
+			loginPage.signInBtnClick();
+			break;
+		default:
+			throw new Error(`Unsupported button: ${button}`);
+	}
 });

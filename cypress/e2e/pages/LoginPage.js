@@ -1,23 +1,107 @@
 export default class LoginPage {
 
-	loginFormExist() {
-		cy.get('[class="a-spacing-small"]').should('exist');
-	}
-
-	inputUsernameExist() {
-		cy.get('[name="email"]').should('exist');
-	}
-
 	inputUsername() {
 		return '[name="email"]';
 	}
 
-	fillUsername(username) {
-		cy.get(this.inputUsername()).type(username);
-	}
-
 	inputPassword() {
 		return '[name="password"]';
+	}
+
+	loginForm() {
+		return '[class="a-spacing-small"]';
+	}
+
+	amazonLogoDe () {
+		return '[aria-label="Amazon.de"]';
+	}
+
+	continueBtn() {
+		return '[type="submit"]';
+	}
+
+	acceptBtn() {
+		return '[name="accept"]';
+	}
+
+	signInBtn() {
+		return '[id="signInSubmit"]';
+	}
+
+	amazonSignInLink() {
+		return '#nav-link-accountList';
+	}
+
+	amazonLogoDeCom() {
+		return '[aria-label*="Amazon.de"], [aria-label*="Amazon"]';
+	}
+
+	alertHeading() {
+		return '[class="a-alert-heading"]';
+	}
+
+	alertContent() {
+		return '[class="a-alert-content"]';
+	}
+
+	missingEmailAlert() {
+		return '#auth-email-missing-alert > div > div';
+	}
+
+	userAccountContent() {
+		return '[class="nav-line-1 nav-progressive-content"]';
+	}
+
+	invalidUsernameHeadingMsg() {
+		return 'There was a problem';
+	}
+
+	invalidUsernameContentDeMsg() {
+		return 'We cannot find an account with that e-mail address';
+	}
+
+	invalidUsernameContentMsg() {
+		return 'We cannot find an account with that email address';
+	}
+
+	invalidPhoneNumberContentMsg() {
+		return 'We cannot find an account with that mobile number';
+	}
+
+	invalidPhoneNumberHeadingMsg() {
+		return 'Incorrect phone number';
+	}
+
+	emptyPasswordMsg() {
+		return 'Enter your password';
+	}
+
+	emptyEmailOrPhoneMsg() {
+		return 'Enter your email or mobile phone number';
+	}
+
+	userAccountMsg() {
+		return 'Hello, test_user_com';
+	}
+
+	validUsername() {
+		return "+359988887163";
+	}
+
+	validPassword() {
+		return "validPassword";
+	}
+
+	loginFormExist() {
+		cy.get(this.loginForm()).should('exist');
+	}
+
+	inputUsernameExist() {
+		cy.get(this.inputUsername()).should('exist');
+	}
+
+	fillUsername(username) {
+		cy.get(this.inputUsername()).type(username);
 	}
 
 	fillPassword(password) {
@@ -25,7 +109,7 @@ export default class LoginPage {
 	}
 
 	userAccount(){
-		cy.get('[class="nav-line-1 nav-progressive-content"]').should('contain.text', 'Hello, test_user_com');
+		cy.get(this.userAccountContent()).should('contain.text', this.userAccountMsg());
 	}
 
 	urlSignIn(){
@@ -36,99 +120,46 @@ export default class LoginPage {
 		cy.url().should('include', '/?ref_=nav_ya_signin');
 	}
 
-	// not in use, delete me pls
-	// urlDe(){
-	// 	cy.url().should('include', '.de/ap/signin')
-	// }
-
-	// invalidCredentialMessage(){
-	// 	cy.get('.oxd-alert').should('contain.text', 'Invalid credentials');
-	// }
-
-	// emptyCredentialsMessage(){
-	// 	cy.get('[class="a-alert-content"]').should('contain.text', 'Enter your email or mobile phone number');
-	// }
-
 	emptyEmailOrPhoneMessage(){
-		//cy.get('[class="a-alert-content"]').should('contain.text', 'Enter your email or mobile phone number');
-			//.should('contain.text', 'Enter your password');
-		//cy.get('#auth-email-missing-alert > div > div').should('contain.text', 'Enter your email address or mobile phone number')
-		//cy.get('#auth-email-missing-alert > div > div').should('contain.html', 'mail address or mobile phone number', { trim: true });
-		//cy.get('[class="a-alert-content"]').should('contain.text', 'Enter your email address or mobile phone number', { trim: true });
 
-		cy.get('#auth-email-missing-alert > div > div').invoke('text').then((text) => {
-			// Remove leading and trailing whitespace, as well as newline characters
+		cy.get(this.missingEmailAlert()).invoke('text').then((text) => {
 			const cleanedText = text.trim();
-			expect(cleanedText).to.equal('Enter your email or mobile phone number');
+			expect(cleanedText).to.equal(this.emptyEmailOrPhoneMsg());
 		});
-
-
-
-		// does work - good
-		// cy.get('[class="a-alert-content"]').invoke('text').then((text) => {
-		// 	// Split the text by newlines to handle multiple lines
-		// 	const messages = text.split('\n').map((msg) => msg.trim());
-		// 	cy.log(messages)
-		// 	// Check if the desired message is present in the array of messages
-		// 	const containsDesiredMessage = messages.includes('Enter your email address or mobile phone number');
-		// 	// Assert that the desired message is present
-		// 	expect(containsDesiredMessage).to.be.false;
-		// 	// Assert that there are no other messages present besides the desired one
-		// 	const otherMessages = messages.filter((msg) => msg !== 'Enter your email address or mobile phone number');
-		// 	expect(otherMessages).to.be.not.empty;
-		// });
-
-
 
 	}
 
 	emptyEmailOrPhoneMessageDe(){
-		cy.get('#auth-email-missing-alert > div > div').should('contain.html', 'mail address or mobile phone number', { trim: true });
+		cy.get(this.missingEmailAlert()).should('contain.html', 'mail address or mobile phone number', { trim: true });
 	}
 
 	emptyPasswordMessage(){
 
-		cy.get('[class="a-alert-content"]').should('contain.text', 'Enter your password', { trim: true });
+		cy.get(this.alertContent()).should('contain.text', this.emptyPasswordMsg(), { trim: true });
 
 	}
 
 	invalidUsernameMessageDe() {
-		//return 'We cannot find an account with that e-mail address';
-		cy.get('[class="a-alert-heading"]').should('contain.text', 'There was a problem');
-		cy.get('[class="a-alert-content"]').should('contain.text', 'We cannot find an account with that e-mail address');
+		cy.get(this.alertHeading()).should('contain.text', this.invalidUsernameHeadingMsg());
+		cy.get(this.alertContent()).should('contain.text', this.invalidUsernameContentDeMsg());
 	}
 
 	invalidUsernameMessage(){
-		cy.get('[class="a-alert-heading"]').should('contain.text', 'There was a problem');
-		//cy.get('[class="a-alert-content"]').should('contain.text', message);
-		cy.get('[class="a-alert-content"]').should('contain.text', 'We cannot find an account with that email address');
+		cy.get(this.alertHeading()).should('contain.text', this.invalidUsernameHeadingMsg());
+		cy.get(this.alertContent()).should('contain.text', this.invalidUsernameContentMsg());
 	}
 
 	invalidPhoneNumberMessage(){
-		cy.get('[class="a-alert-heading"]').should('contain.text', 'Incorrect phone number');
-		//cy.get('[class="a-alert-content"]').should('contain.text', message);
-		cy.get('[class="a-alert-content"]').should('contain.text', 'We cannot find an account with that mobile number');
-	}
-
-	invalidPasswordMessage(){
-		cy.get(':nth-child(3) > .oxd-input-group > .oxd-text').should('contain.text', 'Required');
+		cy.get(this.alertHeading()).should('contain.text', this.invalidPhoneNumberHeadingMsg());
+		cy.get(this.alertContent()).should('contain.text', this.invalidPhoneNumberContentMsg());
 	}
 
 	amazonLogoDeComExist() {
-		cy.get('[aria-label*="Amazon.de"], [aria-label*="Amazon"]').should('exist');
-	}
-
-	amazonLogoDe () {
-		//cy.find('[aria-label="Amazon.de"]').should('exist');
-		return '[aria-label="Amazon.de"]';
+		cy.get(this.amazonLogoDeCom()).should('exist');
 	}
 
 	amazonSignInClick() {
-		cy.get('#nav-link-accountList').click();
-	}
-
-	continueBtn() {
-		return '[type="submit"]';
+		cy.get(this.amazonSignInLink()).click();
 	}
 
 	continueBtnClick() {
@@ -140,12 +171,11 @@ export default class LoginPage {
 	}
 
 	acceptBtnClick() {
-		//cy.get('#sp-cc-accept').click();
-		cy.get('[name="accept"]').click();
+		cy.get(this.acceptBtn()).click();
 	}
 
 	signInBtnClick() {
-		cy.get('[id="signInSubmit"]').click();
+		cy.get(this.signInBtn()).click();
 	}
 
 }
